@@ -1,0 +1,47 @@
+================================================================================
+                    PROPOSAL & DESKRIPSI TUGAS PROYEK
+            MATA KULIAH: PEMROGRAMAN WEB (REGISTRATION & TICKET SYSTEM)
+================================================================================
+
+Nama Proyek: Registration & Ticket System
+Pendekatan : Hybrid Architecture (High Performance & Resource Efficiency)
+
+IDENTITAS KELOMPOK:
+--------------------------------------------------------------------------------
+1. 25103041072 - Hisam Zacky Aqmar
+2. 25103041073 - Abil Khoiri Hmmad
+3. 25103041079 - Muhammad Nurul Huda
+
+LINK REPOSITORY (PROGRESS & DEVELOPMENT):
+--------------------------------------------------------------------------------
+Repository URL : [Masukkan Link GitHub / GitLab di sini, misal: https://github.com/username/project-pemrograman-web]
+Deployment URL : [Akan diisi link Vercel saat live]
+
+SPESIFIKASI ARSITEKTUR & TEKNOLOGI:
+--------------------------------------------------------------------------------
+1. Frontend & Client-Side:
+   - Framework : Next.js & Tailwind CSS
+   - Deployment: Vercel Serverless
+   - Fitur     : Google Auth, Dynamic Form Builder, Responsive UI, Midtrans Popup.
+
+2. Database & Storage:
+   - Database     : PostgreSQL (Supabase)
+   - Cloud Storage: Supabase Storage (Penyimpanan poster event & upload berkas).
+   - Realtime     : Supabase Realtime Channels (Instant status update di UI).
+
+3. Dedicated Runtime & Worker Service:
+   - Runtime         : Node.js (Local / Dedicated Server)
+   - Email Dispatcher: Nodemailer dengan protokol SMTP Gmail biasa
+   - Ticket Engine   : Generator unik QR Code untuk validasi kehadiran di hari acara.
+
+4. Payment Gateway:
+   - Midtrans Snap: Menangani proses checkout & settlement secara aman dan terenkripsi.
+
+FITUR UTAMA SISTEM:
+--------------------------------------------------------------------------------
+- Pembuatan Formulir Dinamis (Custom Form Builder ala Google Forms).
+- Wajib Login Google (Mencegah pendaftar fiktif/anonim).
+- Pembayaran Multi-Channel Otomatis via Midtrans (QRIS, VA Bank, E-Wallet).
+- Verifikasi Pembayaran Realtime tanpa reload halaman web.
+- Pengiriman Tiket Digital (QR Code & Instruksi Event) otomatis ke Email Gmail peserta.
+================================================================================
