@@ -42,7 +42,7 @@ export async function POST(req: Request) {
       throw new Error(updateError.message);
     }
 
-    const origin = req.headers.get("origin") || "http://localhost:3000";
+    const origin = req.headers.get("origin");
     const resetLink = `${origin}/admin/reset-password?token=${token}`;
 
     await sendPasswordResetEmail(cleanEmail, resetLink);
