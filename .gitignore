@@ -1,7 +1,9 @@
 node_modules/
+.next/
 .env
 .env*.local
 .vercel/
 dist/
 .DS_Store
 Thumbs.db
+internal.txt
