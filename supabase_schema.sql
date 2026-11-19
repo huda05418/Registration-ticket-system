@@ -31,6 +31,7 @@ CREATE TABLE forms (
     slug VARCHAR(255) UNIQUE NOT NULL,
     is_paid BOOLEAN DEFAULT false,
     price NUMERIC(12, 2) DEFAULT 0,
+    is_active BOOLEAN DEFAULT true,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL,
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
 );
@@ -99,3 +100,7 @@ END $$;
 
 -- 10. CONTOH DAFTARKAN EMAIL ADMIN PERTAMA (Ganti dengan email asli Anda):
 -- INSERT INTO admins (email) VALUES ('emailanda@gmail.com');
+
+-- 11. MIGRATION FOR EXISTING TABLES (Jalankan ini jika database sudah ada):
+-- ALTER TABLE forms ADD COLUMN IF NOT EXISTS is_active BOOLEAN DEFAULT true;
+

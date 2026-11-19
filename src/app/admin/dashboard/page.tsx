@@ -16,7 +16,12 @@ import {
   LogOut,
   ExternalLink,
   ChevronDown,
-  Trash2
+  Trash2,
+  Lock,
+  Unlock,
+  CheckCircle2,
+  Megaphone,
+  MessageSquare
 } from "lucide-react";
 
 interface FormItem {
@@ -25,6 +30,7 @@ interface FormItem {
   slug: string;
   is_paid: boolean;
   price: number;
+  is_active?: boolean;
   created_at: string;
   updated_at: string;
 }
@@ -128,6 +134,29 @@ export default function AdminDashboardPage() {
     await supabase.from("forms").delete().eq("id", id);
     setForms(forms.filter((f) => f.id !== id));
     setActiveMenuId(null);
+  };
+
+  const handleToggleFormStatus = async (formId: string, currentActive: boolean, e: React.MouseEvent) => {
+    e.stopPropagation();
+    try {
+      const newStatus = !currentActive;
+      const { error } = await supabase
+        .from("forms")
+        .update({ is_active: newStatus, updated_at: new Date().toISOString() })
+        .eq("id", formId);
+
+      if (error) {
+        alert("Gagal mengubah status: " + error.message);
+        return;
+      }
+
+      setForms((prev) =>
+        prev.map((f) => (f.id === formId ? { ...f, is_active: newStatus } : f))
+      );
+      setActiveMenuId(null);
+    } catch (err: any) {
+      alert("Error: " + err.message);
+    }
   };
 
   const handleLogout = async () => {
@@ -335,11 +364,22 @@ export default function AdminDashboardPage() {
                     <div className="h-1.5 w-full bg-purple-200 rounded"></div>
                     <div className="h-1.5 w-4/5 bg-purple-200 rounded"></div>
                   </div>
-                  {item.is_paid && (
-                    <span className="self-end text-[10px] bg-emerald-100 text-emerald-800 font-bold px-1.5 py-0.5 rounded">
-                      Berbayar
-                    </span>
-                  )}
+                  <div className="flex items-center gap-1.5 self-end">
+                    {item.is_active === false ? (
+                      <span className="text-[10px] bg-red-100 text-red-700 font-bold px-1.5 py-0.5 rounded flex items-center gap-1">
+                        <Lock className="w-2.5 h-2.5" /> Ditutup
+                      </span>
+                    ) : (
+                      <span className="text-[10px] bg-emerald-100 text-emerald-700 font-bold px-1.5 py-0.5 rounded flex items-center gap-1">
+                        <CheckCircle2 className="w-2.5 h-2.5" /> Buka
+                      </span>
+                    )}
+                    {item.is_paid && (
+                      <span className="text-[10px] bg-purple-100 text-purple-800 font-bold px-1.5 py-0.5 rounded">
+                        Berbayar
+                      </span>
+                    )}
+                  </div>
                 </div>
 
                 {/* Footer Area */}
@@ -351,7 +391,7 @@ export default function AdminDashboardPage() {
                     <div className="flex items-center gap-1.5">
                       <FileText className="w-3.5 h-3.5 text-[#673ab7]" />
                       <span>
-                        Dibuka {new Date(item.created_at).toLocaleDateString("id-ID", { day: "numeric", month: "short", year: "numeric" })}
+                        {new Date(item.created_at).toLocaleDateString("id-ID", { day: "numeric", month: "short", year: "numeric" })}
                       </span>
                     </div>
 
@@ -367,7 +407,33 @@ export default function AdminDashboardPage() {
                       </button>
 
                       {activeMenuId === item.id && (
-                        <div className="absolute right-0 bottom-6 w-36 bg-white border border-gray-200 rounded shadow-lg py-1 z-20">
+                        <div className="absolute right-0 bottom-6 w-44 bg-white border border-gray-200 rounded shadow-lg py-1 z-20">
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              router.push(`/admin/form/${item.id}?tab=chat`);
+                            }}
+                            className="w-full flex items-center gap-2 px-3 py-1.5 text-xs text-purple-700 hover:bg-purple-50 text-left font-medium"
+                          >
+                            <Megaphone className="w-3.5 h-3.5 text-[#673ab7]" />
+                            <span>Chat & Pengumuman</span>
+                          </button>
+                          <button
+                            onClick={(e) => handleToggleFormStatus(item.id, item.is_active !== false, e)}
+                            className="w-full flex items-center gap-2 px-3 py-1.5 text-xs text-gray-700 hover:bg-gray-100 text-left"
+                          >
+                            {item.is_active === false ? (
+                              <>
+                                <Unlock className="w-3.5 h-3.5 text-emerald-600" />
+                                <span>Buka Formulir</span>
+                              </>
+                            ) : (
+                              <>
+                                <Lock className="w-3.5 h-3.5 text-amber-600" />
+                                <span>Tutup Formulir</span>
+                              </>
+                            )}
+                          </button>
                           <Link
                             href={`/form/${item.slug}`}
                             target="_blank"
