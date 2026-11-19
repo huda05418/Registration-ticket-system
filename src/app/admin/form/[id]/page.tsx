@@ -286,21 +286,19 @@ export default function FormEditorPage() {
         <div className="flex justify-center border-t border-gray-100">
           <button
             onClick={() => setActiveTab("questions")}
-            className={`px-6 py-2.5 text-xs font-medium border-b-2 transition ${
-              activeTab === "questions"
+            className={`px-6 py-2.5 text-xs font-medium border-b-2 transition ${activeTab === "questions"
                 ? "border-[#673ab7] text-[#673ab7]"
                 : "border-transparent text-gray-600 hover:text-gray-900"
-            }`}
+              }`}
           >
             Pertanyaan
           </button>
           <button
             onClick={() => setActiveTab("responses")}
-            className={`px-6 py-2.5 text-xs font-medium border-b-2 transition flex items-center gap-1 ${
-              activeTab === "responses"
+            className={`px-6 py-2.5 text-xs font-medium border-b-2 transition flex items-center gap-1 ${activeTab === "responses"
                 ? "border-[#673ab7] text-[#673ab7]"
                 : "border-transparent text-gray-600 hover:text-gray-900"
-            }`}
+              }`}
           >
             <span>Tanggapan</span>
             <span className="text-[10px] bg-gray-200 text-gray-700 px-1.5 py-0.5 rounded-full">
@@ -309,11 +307,10 @@ export default function FormEditorPage() {
           </button>
           <button
             onClick={() => setActiveTab("settings")}
-            className={`px-6 py-2.5 text-xs font-medium border-b-2 transition ${
-              activeTab === "settings"
+            className={`px-6 py-2.5 text-xs font-medium border-b-2 transition ${activeTab === "settings"
                 ? "border-[#673ab7] text-[#673ab7]"
                 : "border-transparent text-gray-600 hover:text-gray-900"
-            }`}
+              }`}
           >
             Setelan
           </button>
@@ -350,11 +347,10 @@ export default function FormEditorPage() {
                 <div
                   key={field.id}
                   onClick={() => setSelectedFieldId(field.id)}
-                  className={`bg-white rounded-lg border p-6 transition shadow-sm ${
-                    isSelected
+                  className={`bg-white rounded-lg border p-6 transition shadow-sm ${isSelected
                       ? "border-l-4 border-l-[#673ab7] border-gray-200"
                       : "border-gray-200 hover:border-gray-300"
-                  }`}
+                    }`}
                 >
                   <div className="flex flex-col sm:flex-row gap-3 sm:items-center justify-between mb-4">
                     <input
@@ -512,11 +508,10 @@ export default function FormEditorPage() {
                       </div>
                       <div className="text-right">
                         <span
-                          className={`inline-block px-2 py-0.5 rounded text-[10px] font-bold ${
-                            sub.payment_status === "SUCCESS"
+                          className={`inline-block px-2 py-0.5 rounded text-[10px] font-bold ${sub.payment_status === "SUCCESS"
                               ? "bg-emerald-100 text-emerald-800"
                               : "bg-amber-100 text-amber-800"
-                          }`}
+                            }`}
                         >
                           {sub.payment_status}
                         </span>
