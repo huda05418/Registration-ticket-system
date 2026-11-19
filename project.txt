@@ -4,7 +4,7 @@
 ================================================================================
 
 Nama Proyek: Registration & Ticket System
-Pendekatan : Hybrid Architecture
+Pendekatan : Hybrid Architecture (Next.js, Supabase & Midtrans)
 
 IDENTITAS KELOMPOK:
 --------------------------------------------------------------------------------
@@ -12,25 +12,26 @@ IDENTITAS KELOMPOK:
 2. 25103041073 - Abil Khoiri Hmmad
 3. 25103041079 - Muhammad Nurul Huda
 
-
+LINK REPOSITORY & DEPLOYMENT:
+--------------------------------------------------------------------------------
+Repository URL : https://github.com/huda05418/Registration-ticket-system
+Deployment URL : https://tugas.searchstoree.com/
 
 SPESIFIKASI ARSITEKTUR & TEKNOLOGI:
 --------------------------------------------------------------------------------
 1. Frontend & Client-Side:
    - Framework : Next.js & Tailwind CSS
-   - Deployment: Vercel Serverless
-   - Fitur     : Google Auth, Dynamic Form Builder, Responsive UI, Midtrans Popup.
+   - Deployment: Vercel Serverless (Custom Domain: tugas.searchstoree.com)
+   - Fitur     : Google Auth, Dynamic Form Builder ala Google Forms, Responsive UI, Midtrans Popup.
 
 2. Database & Storage:
    - Database     : PostgreSQL (Supabase)
-   - Cloud Storage: Supabase Storage (Penyimpanan poster event & upload berkas).
-   - Realtime     : Supabase Realtime Channels (Instant status update di UI).
+   - Realtime     : Supabase Realtime Channels (Forum Diskusi & Pengumuman 2 Channel).
 
-3. Dedicated Runtime & Worker Service:
-   - Runtime         : Node.js (Local / Dedicated Server)
-   - Email Dispatcher: Nodemailer dengan protokol SMTP Gmail biasa
-   - Ticket Engine   : Generator unik QR Code untuk validasi kehadiran di hari acara.
+3. Autentikasi Admin & SMTP:
+   - Sistem      : Whitelist Email di Database
+   - Protokol    : SMTP Gmail untuk Aktivasi dan Reset Password Admin secara aman.
 
 4. Payment Gateway:
-   - Midtrans Snap: Menangani proses checkout & settlement secara aman dan terenkripsi.
-
+   - Midtrans Snap: Multi-payment (QRIS, VA Bank, E-Wallet) dengan tombol verifikasi langsung.
+================================================================================
