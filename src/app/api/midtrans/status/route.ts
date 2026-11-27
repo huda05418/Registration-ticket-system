@@ -16,7 +16,7 @@ export async function GET(req: Request) {
       ? "https://api.midtrans.com"
       : "https://api.sandbox.midtrans.com";
 
-    let midtransStatus = "settlement";
+    let midtransStatus = "pending";
 
     if (serverKey) {
       const authString = Buffer.from(`${serverKey}:`).toString("base64");
@@ -30,6 +30,13 @@ export async function GET(req: Request) {
       if (res.ok) {
         const data = await res.json();
         midtransStatus = data.transaction_status;
+      } else {
+        const errData = await res.json().catch(() => ({}));
+        return NextResponse.json({
+          status: "PENDING",
+          transaction_status: errData.status_message || "pending",
+          message: "Transaksi belum diselesaikan di Midtrans."
+        });
       }
     }
 

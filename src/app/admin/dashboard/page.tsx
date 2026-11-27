@@ -16,7 +16,12 @@ import {
   LogOut,
   ExternalLink,
   ChevronDown,
-  Trash2
+  Trash2,
+  Lock,
+  Unlock,
+  CheckCircle2,
+  Megaphone,
+  MessageSquare
 } from "lucide-react";
 
 interface FormItem {
@@ -25,6 +30,7 @@ interface FormItem {
   slug: string;
   is_paid: boolean;
   price: number;
+  is_active?: boolean;
   created_at: string;
   updated_at: string;
 }
@@ -61,50 +67,99 @@ export default function AdminDashboardPage() {
     try {
       const title = templateTitle || "Formulir tanpa judul";
       const slug = `form-${Date.now().toString(36)}`;
-
-      const { data: form, error } = await supabase
-        .from("forms")
-        .insert({
-          title,
-          slug,
-          is_paid: false,
-          price: 0,
-        })
-        .select()
-        .single();
-
-      if (error || !form) {
-        alert("Gagal membuat formulir baru.");
-        return;
-      }
-
-      // Buat default fields jika template
+      let description = "";
+      let isPaid = false;
+      let price = 0;
       let defaultFields: any[] = [];
+
       if (templateType === "contact") {
+        description = "Silakan isi data kontak Anda dengan lengkap dan valid.";
         defaultFields = [
-          { form_id: form.id, label: "Nama Lengkap", type: "text", required: true, order_index: 0 },
-          { form_id: form.id, label: "Email", type: "text", required: true, order_index: 1 },
-          { form_id: form.id, label: "Alamat", type: "textarea", required: false, order_index: 2 },
-          { form_id: form.id, label: "Nomor Telepon", type: "number", required: true, order_index: 3 },
+          { label: "Nama Lengkap", type: "text", required: true, order_index: 0 },
+          { label: "Email", type: "text", required: true, order_index: 1 },
+          { label: "Nomor WhatsApp / HP", type: "number", required: true, order_index: 2 },
+          { label: "Alamat Lengkap", type: "textarea", required: false, order_index: 3 },
+          { label: "Catatan atau Pesan", type: "textarea", required: false, order_index: 4 },
         ];
       } else if (templateType === "event") {
+        description = "Formulir pendaftaran resmi kegiatan. Mohon lengkapi data dengan benar.";
         defaultFields = [
-          { form_id: form.id, label: "Nama Peserta", type: "text", required: true, order_index: 0 },
-          { form_id: form.id, label: "Institusi / Organisasi", type: "text", required: true, order_index: 1 },
-          { form_id: form.id, label: "Nomor WhatsApp", type: "number", required: true, order_index: 2 },
+          { label: "Nama Peserta", type: "text", required: true, order_index: 0 },
+          { label: "Institusi / Organisasi", type: "text", required: true, order_index: 1 },
+          { label: "Nomor WhatsApp", type: "number", required: true, order_index: 2 },
           {
-            form_id: form.id,
             label: "Pilihan Sesi / Kelas",
             type: "radio",
-            options: ["Sesi Pagi (09:00 - 12:00)", "Sesi Siang (13:00 - 16:00)"],
+            options: ["Sesi Pagi (09:00 - 12:00)", "Sesi Siang (13:00 - 16:00)", "Sesi Penuh (Full Day)"],
             required: true,
             order_index: 3,
           },
+          { label: "Kebutuhan Khusus / Alergi Makanan", type: "text", required: false, order_index: 4 },
+        ];
+      } else if (templateType === "rsvp") {
+        description = "Mohon konfirmasikan kehadiran Anda pada acara kami selambat-lambatnya H-3 kegiatan.";
+        defaultFields = [
+          { label: "Nama Lengkap Tamu", type: "text", required: true, order_index: 0 },
+          {
+            label: "Apakah Anda akan hadir?",
+            type: "radio",
+            options: ["Ya, saya akan hadir", "Maaf, berhalangan hadir", "Belum dapat memastikan"],
+            required: true,
+            order_index: 1,
+          },
+          {
+            label: "Jumlah Orang yang Hadir",
+            type: "dropdown",
+            options: ["1 Orang", "2 Orang", "3 Orang atau lebih"],
+            required: true,
+            order_index: 2,
+          },
+          { label: "Nomor WhatsApp", type: "number", required: true, order_index: 3 },
+          { label: "Pesan / Ucapan untuk Tuan Rumah", type: "textarea", required: false, order_index: 4 },
+        ];
+      } else if (templateType === "party") {
+        description = "Kami mengundang Anda untuk hadir bernostalgia bersama dalam acara pesta dan reuni akbar.";
+        defaultFields = [
+          { label: "Nama Lengkap & Panggilan", type: "text", required: true, order_index: 0 },
+          { label: "Tahun Angkatan / Kelas", type: "text", required: true, order_index: 1 },
+          {
+            label: "Konfirmasi Kehadiran",
+            type: "radio",
+            options: ["Hadir Sendiri", "Hadir Bersama Pasangan / Teman", "Tidak Dapat Hadir"],
+            required: true,
+            order_index: 2,
+          },
+          { label: "Nomor WhatsApp", type: "number", required: true, order_index: 3 },
+          {
+            label: "Ukuran Kaos Merchandise",
+            type: "dropdown",
+            options: ["S", "M", "L", "XL", "XXL"],
+            required: false,
+            order_index: 4,
+          },
+          { label: "Saran Musik / Permainan untuk Pesta", type: "textarea", required: false, order_index: 5 },
+        ];
+      } else if (templateType === "seminar") {
+        description = "Seminar & Workshop Eksklusif bersertifikat. Fasilitas: e-certificate, materi pembicara, dan akses komunitas.";
+        isPaid = true;
+        price = 50000;
+        defaultFields = [
+          { label: "Nama Lengkap (untuk E-Sertifikat)", type: "text", required: true, order_index: 0 },
+          { label: "Email Aktif", type: "text", required: true, order_index: 1 },
+          { label: "Nomor WhatsApp", type: "number", required: true, order_index: 2 },
+          {
+            label: "Profesi / Status Saat Ini",
+            type: "radio",
+            options: ["Mahasiswa / Pelajar", "Pekerja / Profesional", "Dosen / Peneliti", "Umum"],
+            required: true,
+            order_index: 3,
+          },
+          { label: "Asal Instansi / Universitas / Perusahaan", type: "text", required: true, order_index: 4 },
+          { label: "Pertanyaan atau Ekspektasi Mengikuti Seminar", type: "textarea", required: false, order_index: 5 },
         ];
       } else {
         defaultFields = [
           {
-            form_id: form.id,
             label: "Pertanyaan tanpa judul",
             type: "radio",
             options: ["Opsi 1"],
@@ -114,7 +169,29 @@ export default function AdminDashboardPage() {
         ];
       }
 
-      await supabase.from("form_fields").insert(defaultFields);
+      const { data: form, error } = await supabase
+        .from("forms")
+        .insert({
+          title,
+          description,
+          slug,
+          is_paid: isPaid,
+          price,
+        })
+        .select()
+        .single();
+
+      if (error || !form) {
+        alert("Gagal membuat formulir baru: " + (error?.message || ""));
+        return;
+      }
+
+      const fieldsWithFormId = defaultFields.map((f) => ({
+        ...f,
+        form_id: form.id,
+      }));
+
+      await supabase.from("form_fields").insert(fieldsWithFormId);
       router.push(`/admin/form/${form.id}`);
     } catch (err: any) {
       alert(err.message || "Gagal membuat form.");
@@ -128,6 +205,29 @@ export default function AdminDashboardPage() {
     await supabase.from("forms").delete().eq("id", id);
     setForms(forms.filter((f) => f.id !== id));
     setActiveMenuId(null);
+  };
+
+  const handleToggleFormStatus = async (formId: string, currentActive: boolean, e: React.MouseEvent) => {
+    e.stopPropagation();
+    try {
+      const newStatus = !currentActive;
+      const { error } = await supabase
+        .from("forms")
+        .update({ is_active: newStatus, updated_at: new Date().toISOString() })
+        .eq("id", formId);
+
+      if (error) {
+        alert("Gagal mengubah status: " + error.message);
+        return;
+      }
+
+      setForms((prev) =>
+        prev.map((f) => (f.id === formId ? { ...f, is_active: newStatus } : f))
+      );
+      setActiveMenuId(null);
+    } catch (err: any) {
+      alert("Error: " + err.message);
+    }
   };
 
   const handleLogout = async () => {
@@ -241,7 +341,7 @@ export default function AdminDashboardPage() {
 
             {/* Template 3: RSVP */}
             <div
-              onClick={() => handleCreateNewForm("RSVP Kegiatan")}
+              onClick={() => handleCreateNewForm("RSVP - Konfirmasi Kehadiran", "rsvp")}
               className="cursor-pointer group"
             >
               <div className="h-32 bg-blue-50 rounded border border-gray-300 hover:border-[#673ab7] p-2 flex flex-col justify-between">
@@ -256,7 +356,7 @@ export default function AdminDashboardPage() {
 
             {/* Template 4: Undangan Pesta */}
             <div
-              onClick={() => handleCreateNewForm("Undangan Pesta & Reuni")}
+              onClick={() => handleCreateNewForm("Undangan Pesta & Reuni Akbar", "party")}
               className="cursor-pointer group"
             >
               <div className="h-32 bg-rose-50 rounded border border-gray-300 hover:border-[#673ab7] p-2 flex flex-col justify-between">
@@ -271,7 +371,7 @@ export default function AdminDashboardPage() {
 
             {/* Template 5: Pendaftaran Seminar Berbayar */}
             <div
-              onClick={() => handleCreateNewForm("Pendaftaran Seminar Berbayar", "event")}
+              onClick={() => handleCreateNewForm("Pendaftaran Seminar & Workshop", "seminar")}
               className="cursor-pointer group"
             >
               <div className="h-32 bg-purple-50 rounded border border-gray-300 hover:border-[#673ab7] p-2 flex flex-col justify-between">
@@ -335,11 +435,22 @@ export default function AdminDashboardPage() {
                     <div className="h-1.5 w-full bg-purple-200 rounded"></div>
                     <div className="h-1.5 w-4/5 bg-purple-200 rounded"></div>
                   </div>
-                  {item.is_paid && (
-                    <span className="self-end text-[10px] bg-emerald-100 text-emerald-800 font-bold px-1.5 py-0.5 rounded">
-                      Berbayar
-                    </span>
-                  )}
+                  <div className="flex items-center gap-1.5 self-end">
+                    {item.is_active === false ? (
+                      <span className="text-[10px] bg-red-100 text-red-700 font-bold px-1.5 py-0.5 rounded flex items-center gap-1">
+                        <Lock className="w-2.5 h-2.5" /> Ditutup
+                      </span>
+                    ) : (
+                      <span className="text-[10px] bg-emerald-100 text-emerald-700 font-bold px-1.5 py-0.5 rounded flex items-center gap-1">
+                        <CheckCircle2 className="w-2.5 h-2.5" /> Buka
+                      </span>
+                    )}
+                    {item.is_paid && (
+                      <span className="text-[10px] bg-purple-100 text-purple-800 font-bold px-1.5 py-0.5 rounded">
+                        Berbayar
+                      </span>
+                    )}
+                  </div>
                 </div>
 
                 {/* Footer Area */}
@@ -351,7 +462,7 @@ export default function AdminDashboardPage() {
                     <div className="flex items-center gap-1.5">
                       <FileText className="w-3.5 h-3.5 text-[#673ab7]" />
                       <span>
-                        Dibuka {new Date(item.created_at).toLocaleDateString("id-ID", { day: "numeric", month: "short", year: "numeric" })}
+                        {new Date(item.created_at).toLocaleDateString("id-ID", { day: "numeric", month: "short", year: "numeric" })}
                       </span>
                     </div>
 
@@ -367,7 +478,33 @@ export default function AdminDashboardPage() {
                       </button>
 
                       {activeMenuId === item.id && (
-                        <div className="absolute right-0 bottom-6 w-36 bg-white border border-gray-200 rounded shadow-lg py-1 z-20">
+                        <div className="absolute right-0 bottom-6 w-44 bg-white border border-gray-200 rounded shadow-lg py-1 z-20">
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              router.push(`/admin/form/${item.id}?tab=chat`);
+                            }}
+                            className="w-full flex items-center gap-2 px-3 py-1.5 text-xs text-purple-700 hover:bg-purple-50 text-left font-medium"
+                          >
+                            <Megaphone className="w-3.5 h-3.5 text-[#673ab7]" />
+                            <span>Chat & Pengumuman</span>
+                          </button>
+                          <button
+                            onClick={(e) => handleToggleFormStatus(item.id, item.is_active !== false, e)}
+                            className="w-full flex items-center gap-2 px-3 py-1.5 text-xs text-gray-700 hover:bg-gray-100 text-left"
+                          >
+                            {item.is_active === false ? (
+                              <>
+                                <Unlock className="w-3.5 h-3.5 text-emerald-600" />
+                                <span>Buka Formulir</span>
+                              </>
+                            ) : (
+                              <>
+                                <Lock className="w-3.5 h-3.5 text-amber-600" />
+                                <span>Tutup Formulir</span>
+                              </>
+                            )}
+                          </button>
                           <Link
                             href={`/form/${item.slug}`}
                             target="_blank"

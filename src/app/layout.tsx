@@ -17,13 +17,13 @@ export default function RootLayout({
     "https://app.sandbox.midtrans.com/snap/snap.js";
   const clientKey = process.env.NEXT_PUBLIC_MIDTRANS_CLIENT_KEY || "";
 
-  return (
+  return (  
     <html lang="id">
       <head>
         <Script
           src={snapUrl}
           data-client-key={clientKey}
-          strategy="lazyOnload"
+          strategy="afterInteractive"
         />
       </head>
       <body className="min-h-screen bg-[#f0ebf8] text-[#202124]">
